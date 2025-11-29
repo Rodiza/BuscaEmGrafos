@@ -5,6 +5,8 @@ package template;
  */
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Grafo {
     
@@ -30,9 +32,9 @@ public class Grafo {
     }
 
     
-    private ArrayList<Vertice> vertices;
+    public ArrayList<Vertice> vertices;
     // Lista de adjacencia. O índice da lista externa corresponde ao valor do vértice
-    private ArrayList<ArrayList<Integer>> listaAdj;
+    public ArrayList<ArrayList<Integer>> listaAdj;
     
     //construtor
     public Grafo() {
@@ -84,4 +86,6 @@ public class Grafo {
     private boolean existeVertice(int valor) {
         return valor >= 0 && valor < vertices.size();
     }
+    
+    
 }
