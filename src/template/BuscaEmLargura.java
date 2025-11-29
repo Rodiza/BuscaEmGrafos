@@ -3,6 +3,7 @@ package template;
 import br.com.davidbuzatto.jsge.core.engine.EngineFrame;
 import br.com.davidbuzatto.jsge.image.Image;
 import java.util.ArrayList;
+import template.Grafo.Vertice;
 
 /**
  * Busca em Grafos
@@ -12,7 +13,8 @@ import java.util.ArrayList;
 public class BuscaEmLargura extends EngineFrame {
     
     private Image logo;
-    private Grafo grafo;
+    private Grafo grafoPequeno;
+    private Grafo grafoGrande;
     int raio;
     
     public BuscaEmLargura() {
@@ -35,15 +37,19 @@ public class BuscaEmLargura extends EngineFrame {
     @Override
     public void create() {
         //Inicializando o grafo com 5 vertices
-        grafo = new Grafo(5);
+        grafoPequeno = new Grafo();
         raio = 30;
-        grafo.adicionarAresta(0, 1);
-        grafo.adicionarAresta(0, 4);
-        grafo.adicionarAresta(1, 2);
-        grafo.adicionarAresta(1, 3);
-        grafo.adicionarAresta(1, 4);
-        grafo.adicionarAresta(2, 3);
-        grafo.adicionarAresta(3, 4);
+        
+        grafoPequeno.adicionarVertice(100, 100);
+        grafoPequeno.adicionarVertice(200, 150);
+        grafoPequeno.adicionarVertice(300, 200);
+        grafoPequeno.adicionarVertice(400, 250);
+        
+        grafoPequeno.adicionarAresta(0, 1);
+        grafoPequeno.adicionarAresta(0, 2);
+        grafoPequeno.adicionarAresta(1, 2);
+        grafoPequeno.adicionarAresta(2, 3);
+        
         
         
     }
@@ -58,13 +64,8 @@ public class BuscaEmLargura extends EngineFrame {
     public void draw() {
         
         clearBackground( WHITE );
-        ArrayList<Integer> vizinhosDoUm = grafo.listaAdj.get(1);
         
-        if(!vizinhosDoUm.isEmpty()){
-            for(int i = 0; i < vizinhosDoUm.size(); i++){
-                desenharVertice(vizinhosDoUm.get(i), 100, 100 + (i * 100));
-            }
-        }
+        desenharGrafo(grafoPequeno);
 
     
     }
@@ -73,10 +74,17 @@ public class BuscaEmLargura extends EngineFrame {
         new BuscaEmLargura();
     }
     
-    public void desenharVertice(int vertice, int x, int y){
-        fillCircle(x, y , raio, WHITE );
-        drawCircle(x, y, raio, BLACK );
-        drawText(Integer.toString(vertice),x, y, 20, BLACK);
+    public void desenharVertice(int valor, int x, int y){
+        fillCircle( x, y, raio, WHITE );
+        drawCircle( x, y,  raio, BLACK );
+        drawText( Integer.toString(valor), x - 5, y - 5, BLACK );
     }
     
+    public void desenharGrafo(Grafo g){
+        
+        //desenha todos os vértices com base nas posições dadas lá no create
+        for(Vertice v : g.getTodosVertices()){
+            desenharVertice(v.getValor(), v.getPosX(), v.getPosY());
+        }
+    }
 }
