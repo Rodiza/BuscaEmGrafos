@@ -2,6 +2,7 @@ package template;
 
 import br.com.davidbuzatto.jsge.core.engine.EngineFrame;
 import br.com.davidbuzatto.jsge.image.Image;
+import br.com.davidbuzatto.jsge.imgui.GuiButton;
 import java.awt.Color;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -13,11 +14,20 @@ import template.Grafo.Vertice;
  * @author Rodrigo C. Garcia e Davi Beli Rosa
  */
 public class BuscaEmLargura extends EngineFrame {
-    
-    private Image logo;
+     
     private Grafo grafoPequeno;
     private Grafo grafoGrande;
-    int raioPequeno;
+    private Grafo grafoAtual;
+    
+    private GuiButton btnGrafoPequeno;
+    private GuiButton btnGrafoGrande;
+    
+    //Essas variaveis servem para avisar o metodo draw so de algo que aconteceu no update
+    private boolean desenhar;
+    private boolean buscar;
+    
+    int valorInicio;
+    int raio;
     int raioGrande;
 
     
@@ -40,15 +50,18 @@ public class BuscaEmLargura extends EngineFrame {
     
     @Override
     public void create() {
-        //Inicializando o grafo com 5 vertices
-        grafoPequeno = new Grafo();
-        raioPequeno = 30;
+        btnGrafoPequeno = new GuiButton(150, 30, 200, 50, "Grafo Pequeno", this);
+        btnGrafoGrande = new GuiButton(650, 30, 200, 50, "Grafo Grande", this);
         
-        grafoPequeno.adicionarVertice(300, 100);
-        grafoPequeno.adicionarVertice(400, 300);
-        grafoPequeno.adicionarVertice(500, 100);
-        grafoPequeno.adicionarVertice(600, 250);
-        grafoPequeno.adicionarVertice(500, 400);
+        
+        //Inicializando o grafo pequeno com 5 vertices
+        grafoPequeno = new Grafo();
+        
+        grafoPequeno.adicionarVertice(300, 150);
+        grafoPequeno.adicionarVertice(400, 350);
+        grafoPequeno.adicionarVertice(500, 150);
+        grafoPequeno.adicionarVertice(600, 300);
+        grafoPequeno.adicionarVertice(500, 450);
         
         grafoPequeno.adicionarAresta(0, 1);
         grafoPequeno.adicionarAresta(0, 2);
@@ -64,7 +77,22 @@ public class BuscaEmLargura extends EngineFrame {
 
     @Override
     public void update( double delta ) {
+        btnGrafoPequeno.update(delta);
+        btnGrafoGrande.update(delta);
         
+        if(btnGrafoPequeno.isMousePressed()){
+            raio = 30;
+            grafoAtual = grafoPequeno;
+            desenhar = true;
+        }
+        
+        if(isMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+            if(verticeClicado(grafoAtual) != null){
+                valorInicio = verticeClicado(grafoAtual).getValor();
+                buscar = true;
+                System.out.println("Vertice: " + verticeClicado(grafoAtual).getValor());
+            }
+        }
     }
     
 
@@ -73,9 +101,20 @@ public class BuscaEmLargura extends EngineFrame {
         
         clearBackground( WHITE );
         
+        btnGrafoPequeno.draw();
+        btnGrafoGrande.draw();
         
-        desenharGrafo(grafoPequeno, raioPequeno);
-        buscaEmLargura(grafoPequeno, 0);
+        drawText("Clique em um vértice para iniciar a busca", 320, 10, 15, BLACK);
+        
+        if(desenhar){
+            desenharGrafo(grafoAtual, raio);
+        }
+        
+        if(buscar){
+            buscaEmLargura(grafoAtual, valorInicio);
+        }
+        
+       
         
 
     
@@ -139,7 +178,7 @@ public class BuscaEmLargura extends EngineFrame {
     }
     
 
-    
+    //fazer uma lista de vertices visitados para desenhar depois
     public void buscaEmLargura(Grafo g, int valorInicio){
         int posX = g.getVertice(valorInicio).getPosX();
         int posY = g.getVertice(valorInicio).getPosY();
@@ -149,7 +188,7 @@ public class BuscaEmLargura extends EngineFrame {
         Queue<Integer> fila = new LinkedList<>(); //Mudar para linked blocking queue se nao funfar
         fila.add(valorInicio);
         marked[valorInicio] = true;
-        desenharVertice(valorInicio, posX, posY, raioPequeno - 5, GREEN);
+        desenharVertice(valorInicio, posX, posY, raio - 5, GREEN);
         System.out.println(valorInicio + " visitado"); //debug
         
         while(!fila.isEmpty()){
@@ -157,7 +196,7 @@ public class BuscaEmLargura extends EngineFrame {
             System.out.println("Olhando vizinhos de " + v);
             
             for(int w : g.listaAdj.get(v)){
-                animarCaminho(g.getVertice(v), g.getVertice(w));
+                //animarCaminho(g.getVertice(v), g.getVertice(w));
                 posX = g.getVertice(w).getPosX();
                 posY = g.getVertice(w).getPosY();
                 
@@ -167,7 +206,7 @@ public class BuscaEmLargura extends EngineFrame {
                     fila.add(w);
                     marked[w] = true;
                     
-                    desenharVertice(w, posX, posY, raioPequeno - 5, GREEN);
+                    desenharVertice(w, posX, posY, raio - 5, GREEN);
                     System.out.println(w + " desenhado");
                     
 
@@ -180,8 +219,35 @@ public class BuscaEmLargura extends EngineFrame {
         
         for(int i = 1000; i > 0; i--){
             desenharAresta(origem.getPosX(), origem.getPosY(), 
-                    destino.getPosX() / i, destino.getPosY() / i, raioPequeno, GREEN);
+                    destino.getPosX() / i, destino.getPosY() / i, raio, GREEN);
         }
     }
+    
+    
+    //Retorna se um vertice foi clicado
+    public Vertice verticeClicado(Grafo g){
+        //Esse metodo vai trapacear, vai ser um quadrado em volta do vertice
+        int mouseX = getMouseX();
+        int mouseY = getMouseY();
+        
+        for(Vertice v : g.getTodosVertices()){
+            int x = v.getPosX() - raio;
+            int y = v.getPosY() - raio;
+            int largura = raio * 2;
+            int altura = raio * 2;
+            
+            if(
+                mouseX >= x &&
+                mouseX <= x + largura &&
+                mouseY >= y &&
+                mouseY <= y + altura  
+            ){ 
+                return v; 
+            }          
+        }
+        return null;
+    }
+    
+
 }
 
