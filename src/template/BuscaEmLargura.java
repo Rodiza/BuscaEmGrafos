@@ -1,9 +1,9 @@
 package template;
 
 import br.com.davidbuzatto.jsge.core.engine.EngineFrame;
-import br.com.davidbuzatto.jsge.image.Image;
 import br.com.davidbuzatto.jsge.imgui.GuiButton;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import template.Grafo.Vertice;
@@ -29,6 +29,8 @@ public class BuscaEmLargura extends EngineFrame {
     int valorInicio;
     int raio;
     int raioGrande;
+    
+    private ArrayList<Vertice> visitados;
 
     
     public BuscaEmLargura() {
@@ -89,7 +91,7 @@ public class BuscaEmLargura extends EngineFrame {
         if(isMouseButtonPressed(MOUSE_BUTTON_LEFT)){
             if(verticeClicado(grafoAtual) != null){
                 valorInicio = verticeClicado(grafoAtual).getValor();
-                buscar = true;
+                buscaEmLargura(grafoAtual, valorInicio);
                 System.out.println("Vertice: " + verticeClicado(grafoAtual).getValor());
             }
         }
@@ -111,7 +113,7 @@ public class BuscaEmLargura extends EngineFrame {
         }
         
         if(buscar){
-            buscaEmLargura(grafoAtual, valorInicio);
+            
         }
         
        
@@ -207,9 +209,10 @@ public class BuscaEmLargura extends EngineFrame {
                     marked[w] = true;
                     
                     desenharVertice(w, posX, posY, raio - 5, GREEN);
-                    System.out.println(w + " desenhado");
                     
 
+                } else{
+                    System.out.println(w + " ja foi visitado");
                 }
             }
         }       
@@ -217,10 +220,7 @@ public class BuscaEmLargura extends EngineFrame {
     
     public void animarCaminho(Vertice origem, Vertice destino){
         
-        for(int i = 1000; i > 0; i--){
-            desenharAresta(origem.getPosX(), origem.getPosY(), 
-                    destino.getPosX() / i, destino.getPosY() / i, raio, GREEN);
-        }
+        
     }
     
     
