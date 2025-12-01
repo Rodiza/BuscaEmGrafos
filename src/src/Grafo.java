@@ -1,4 +1,4 @@
-package template;
+package src;
 
 /**
  * @author rodiz

@@ -1,12 +1,16 @@
-package template;
+package src;
 
+import br.com.davidbuzatto.jsge.animation.tween.TweenAnimation;
+import br.com.davidbuzatto.jsge.animation.tween.TweenAnimationComponentMapper;
 import br.com.davidbuzatto.jsge.core.engine.EngineFrame;
 import br.com.davidbuzatto.jsge.imgui.GuiButton;
+import br.com.davidbuzatto.jsge.math.Vector2;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
-import template.Grafo.Vertice;
+import src.Grafo.Vertice;
 
 /**
  * Busca em Grafos
@@ -22,15 +26,26 @@ public class BuscaEmLargura extends EngineFrame {
     private GuiButton btnGrafoPequeno;
     private GuiButton btnGrafoGrande;
     
-    //Essas variaveis servem para avisar o metodo draw so de algo que aconteceu no update
+    //Essa variavel serve para avisar o metodo draw de algo que aconteceu no update
     private boolean desenhar;
-    private boolean buscar;
+    private boolean desenharCaminho;
     
     int valorInicio;
     int raio;
-    int raioGrande;
+    Color corPadrao = BLACK;
     
-    private ArrayList<Vertice> visitados;
+    //Fila para armazenar o caminho da busca
+    private Queue<EventoBusca> filaEventos;
+    private EventoBusca eventoAtual;
+    private List<EventoBusca> historicoEventos;
+    
+    //variaveis de animacao ( nao usei :( )
+    private Vertice animOrigem = null; 
+    private Vector2 animPonta = null;
+    private boolean animando = false;
+    
+   
+    
 
     
     public BuscaEmLargura() {
@@ -52,6 +67,10 @@ public class BuscaEmLargura extends EngineFrame {
     
     @Override
     public void create() {
+        
+        filaEventos = new LinkedList<>();
+        historicoEventos = new ArrayList<>();
+        
         btnGrafoPequeno = new GuiButton(150, 30, 200, 50, "Grafo Pequeno", this);
         btnGrafoGrande = new GuiButton(650, 30, 200, 50, "Grafo Grande", this);
         
@@ -72,6 +91,9 @@ public class BuscaEmLargura extends EngineFrame {
         grafoPequeno.adicionarAresta(4, 3);
         grafoPequeno.adicionarAresta(4, 1);
         
+        //Inicializando grafo grande com 20 vertices
+        
+        
         
         
     }
@@ -86,15 +108,49 @@ public class BuscaEmLargura extends EngineFrame {
             raio = 30;
             grafoAtual = grafoPequeno;
             desenhar = true;
+            
+            //Reseta tudo quando aperta
+            historicoEventos.clear();
+            filaEventos.clear();
+            eventoAtual = null;
         }
         
         if(isMouseButtonPressed(MOUSE_BUTTON_LEFT)){
             if(verticeClicado(grafoAtual) != null){
+                //reseta tudo quando clica em outro vertice
+                historicoEventos.clear(); 
+                filaEventos.clear();
+                
                 valorInicio = verticeClicado(grafoAtual).getValor();
                 buscaEmLargura(grafoAtual, valorInicio);
                 System.out.println("Vertice: " + verticeClicado(grafoAtual).getValor());
             }
+            
+            
         }
+        
+        if(isKeyPressed(KEY_SPACE)){
+            
+            if(eventoAtual != null){
+                historicoEventos.add(eventoAtual);
+                
+                //debug
+                if(eventoAtual.tipo == TipoEvento.PERCORRER_ARESTA){
+                    System.out.println("Origem = " + eventoAtual.origem.getValor());
+                    System.out.println("Destino = " + eventoAtual.destino.getValor());  
+                }else{
+                    System.out.println("Visitado = " + eventoAtual.origem.getValor());
+                }
+            }
+            
+            if(!filaEventos.isEmpty()){
+                eventoAtual = filaEventos.poll();
+                System.out.println(eventoAtual.tipo.toString());
+                desenharCaminho = true;
+            }
+            
+                  
+        }         
     }
     
 
@@ -109,31 +165,42 @@ public class BuscaEmLargura extends EngineFrame {
         drawText("Clique em um vértice para iniciar a busca", 320, 10, 15, BLACK);
         
         if(desenhar){
-            desenharGrafo(grafoAtual, raio);
+            desenharGrafo(grafoAtual, raio);       
         }
         
-        if(buscar){
+        if(desenharCaminho){
             
+            //esse loop garante que os eventos q ja aconteceram continuem sendo desenhados      
+            for(EventoBusca evento : historicoEventos){
+                desenharEvento(evento);   
+            }
+            
+            if(eventoAtual != null){
+                desenharEvento(eventoAtual);
+            }
         }
-        
-       
-        
-
-    
+          
     }
     
     public static void main( String[] args ) {
         new BuscaEmLargura();
     }
     
-    public void desenharVertice(int valor, int x, int y, int raio, Color cor){
+    public void desenharVertice(Vertice v, int raio, Color cor){
+        int x = v.getPosX();
+        int y = v.getPosY();
+        
         fillCircle( x, y, raio, WHITE );
         drawCircle( x, y,  raio, cor );
-        drawText( Integer.toString(valor), x - 5, y - 5, raio - 5, BLACK );
+        drawText( Integer.toString(v.getValor()), x - 5, y - 5, raio - 5, BLACK );
     }
     
-    public void desenharAresta(int x1, int y1, int x2, int y2, int raio, Color cor){
+    public void desenharAresta(Vertice vOrigem, Vertice vDestino, int raio, Color cor){
         //Código da internet, mt complicado nao compensava perder tempo
+        int x1 = vOrigem.getPosX();
+        int y1 = vOrigem.getPosY();
+        int x2 = vDestino.getPosX();
+        int y2 = vDestino.getPosY();
         
         //calcula a hipotenusa
         double dx = x2 - x1;
@@ -158,7 +225,6 @@ public class BuscaEmLargura extends EngineFrame {
         
         //desenha a linha ajustada
         drawLine(novoX1, novoY1, novoX2, novoY2, cor);
-        
     }    
     
     public void desenharGrafo(Grafo g, int raio){
@@ -166,14 +232,13 @@ public class BuscaEmLargura extends EngineFrame {
         //Itera por todos os vértices
         for(Vertice v : g.getTodosVertices()){
             //desenha os vértices
-            desenharVertice(v.getValor(), v.getPosX(), v.getPosY(), raio, BLACK);
+            desenharVertice(v, raio, BLACK);
             
             //desenha as arestas
             for(int valorVizinho : g.getVizinhos(v.getValor())){
                 Vertice vizinho = g.getVertice(valorVizinho);
                 
-                desenharAresta(v.getPosX(), v.getPosY(), 
-                        vizinho.getPosX(), vizinho.getPosY(), raio, BLACK);
+                desenharAresta(v, vizinho, raio, BLACK);
             }
         }
         
@@ -190,7 +255,10 @@ public class BuscaEmLargura extends EngineFrame {
         Queue<Integer> fila = new LinkedList<>(); //Mudar para linked blocking queue se nao funfar
         fila.add(valorInicio);
         marked[valorInicio] = true;
-        desenharVertice(valorInicio, posX, posY, raio - 5, GREEN);
+        
+        //Valor inicio visitado, adicionar na fila de eventos
+        filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(valorInicio), null));
+        
         System.out.println(valorInicio + " visitado"); //debug
         
         while(!fila.isEmpty()){
@@ -198,19 +266,22 @@ public class BuscaEmLargura extends EngineFrame {
             System.out.println("Olhando vizinhos de " + v);
             
             for(int w : g.listaAdj.get(v)){
-                //animarCaminho(g.getVertice(v), g.getVertice(w));
+                //busca os vizinhos
+                filaEventos.add(new EventoBusca(TipoEvento.PERCORRER_ARESTA, g.getVertice(v), g.getVertice(w)));
+                
                 posX = g.getVertice(w).getPosX();
                 posY = g.getVertice(w).getPosY();
                 
                 if( !marked[w] ){
-                    System.out.println(w + ", vizinho de " + v + " ainda nao foi visitado");
                     
                     fila.add(w);
                     marked[w] = true;
                     
-                    desenharVertice(w, posX, posY, raio - 5, GREEN);
+                    System.out.println(w + ", vizinho de " + v + " ainda nao foi visitado");
                     
-
+                    //visita o vizinho
+                    filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(w), null));
+                    
                 } else{
                     System.out.println(w + " ja foi visitado");
                 }
@@ -218,13 +289,10 @@ public class BuscaEmLargura extends EngineFrame {
         }       
     }
     
-    public void animarCaminho(Vertice origem, Vertice destino){
         
-        
-    }
     
     
-    //Retorna se um vertice foi clicado
+    //Retorna o vertice clicado
     public Vertice verticeClicado(Grafo g){
         //Esse metodo vai trapacear, vai ser um quadrado em volta do vertice
         int mouseX = getMouseX();
@@ -248,6 +316,12 @@ public class BuscaEmLargura extends EngineFrame {
         return null;
     }
     
-
+    private void desenharEvento(EventoBusca evento) {
+        if(evento.tipo == TipoEvento.PERCORRER_ARESTA){
+            desenharAresta(evento.origem, evento.destino, raio + 4, DARKGREEN);
+        } else {
+            desenharVertice(evento.origem, raio - 4, DARKGREEN);
+        }
+    }
 }
 
