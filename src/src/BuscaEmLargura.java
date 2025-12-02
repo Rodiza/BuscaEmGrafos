@@ -29,6 +29,7 @@ public class BuscaEmLargura extends EngineFrame {
     //Essa variavel serve para avisar o metodo draw de algo que aconteceu no update
     private boolean desenhar;
     private boolean desenharCaminho;
+    private boolean buscaIniciada = false;
     
     int valorInicio;
     int raio;
@@ -78,11 +79,11 @@ public class BuscaEmLargura extends EngineFrame {
         //Inicializando o grafo pequeno com 5 vertices
         grafoPequeno = new Grafo();
         
-        grafoPequeno.adicionarVertice(300, 150);
-        grafoPequeno.adicionarVertice(400, 350);
-        grafoPequeno.adicionarVertice(500, 150);
-        grafoPequeno.adicionarVertice(600, 300);
-        grafoPequeno.adicionarVertice(500, 450);
+        grafoPequeno.adicionarVertice(200, 150);
+        grafoPequeno.adicionarVertice(300, 350);
+        grafoPequeno.adicionarVertice(400, 150);
+        grafoPequeno.adicionarVertice(500, 300);
+        grafoPequeno.adicionarVertice(400, 450);
         
         grafoPequeno.adicionarAresta(0, 1);
         grafoPequeno.adicionarAresta(0, 2);
@@ -108,11 +109,13 @@ public class BuscaEmLargura extends EngineFrame {
             raio = 30;
             grafoAtual = grafoPequeno;
             desenhar = true;
+            buscaIniciada = false;
             
             //Reseta tudo quando aperta
             historicoEventos.clear();
             filaEventos.clear();
             eventoAtual = null;
+            
         }
         
         if(isMouseButtonPressed(MOUSE_BUTTON_LEFT)){
@@ -124,6 +127,8 @@ public class BuscaEmLargura extends EngineFrame {
                 valorInicio = verticeClicado(grafoAtual).getValor();
                 buscaEmLargura(grafoAtual, valorInicio);
                 System.out.println("Vertice: " + verticeClicado(grafoAtual).getValor());
+                
+                
             }
             
             
@@ -144,7 +149,8 @@ public class BuscaEmLargura extends EngineFrame {
             }
             
             if(!filaEventos.isEmpty()){
-                eventoAtual = filaEventos.poll();
+                eventoAtual = filaEventos.poll();  
+                buscaIniciada = true;
                 System.out.println(eventoAtual.tipo.toString());
                 desenharCaminho = true;
             }
@@ -175,9 +181,16 @@ public class BuscaEmLargura extends EngineFrame {
                 desenharEvento(evento);   
             }
             
+            //isso aqui desenha apenas o atual (metodo diferente por causa da cor)
+            desenharEventoAtual(eventoAtual);
+            
             if(eventoAtual != null){
                 desenharEvento(eventoAtual);
             }
+        }
+        
+        if(buscaIniciada){
+            desenharTextoEvento(eventoAtual);
         }
           
     }
@@ -259,6 +272,7 @@ public class BuscaEmLargura extends EngineFrame {
         //Valor inicio visitado, adicionar na fila de eventos
         filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(valorInicio), null));
         
+        
         System.out.println(valorInicio + " visitado"); //debug
         
         while(!fila.isEmpty()){
@@ -318,9 +332,35 @@ public class BuscaEmLargura extends EngineFrame {
     
     private void desenharEvento(EventoBusca evento) {
         if(evento.tipo == TipoEvento.PERCORRER_ARESTA){
-            desenharAresta(evento.origem, evento.destino, raio + 4, DARKGREEN);
+            desenharAresta(evento.origem, evento.destino, raio, DARKGREEN);
         } else {
             desenharVertice(evento.origem, raio - 4, DARKGREEN);
+        }
+    }
+    
+    //Igual ao metodo de cima só muda a cor e um pouco do raio para diferenciar
+    private void desenharEventoAtual(EventoBusca evento) {
+        if(evento.tipo == TipoEvento.PERCORRER_ARESTA){
+            desenharAresta(evento.origem, evento.destino, raio, BLUE);
+        } else {
+            desenharVertice(evento.origem, raio + 4, BLUE);
+        }
+    }
+    
+    private void desenharTextoEvento(EventoBusca evento){
+        
+        int valorO = evento.origem.getValor();
+        
+        drawText("Passo atual: ", 700, 100, 20, BLACK);
+        
+        if(evento.tipo == TipoEvento.VISITAR_VERTICE){
+            drawText("Vizitando Vértice " + valorO, 
+                    700, 120, 15, BLACK);  
+        }
+        
+        if(evento.tipo == TipoEvento.PERCORRER_ARESTA){
+            drawText("Percorrendo a aresta" + "(" + valorO + ", " + evento.destino.getValor() + ")", 
+                    700, 120, 15, BLACK);
         }
     }
 }
