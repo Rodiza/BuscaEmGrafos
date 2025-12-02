@@ -1,8 +1,7 @@
 package src;
 
-import br.com.davidbuzatto.jsge.animation.tween.TweenAnimation;
-import br.com.davidbuzatto.jsge.animation.tween.TweenAnimationComponentMapper;
 import br.com.davidbuzatto.jsge.core.engine.EngineFrame;
+import br.com.davidbuzatto.jsge.geom.Line;
 import br.com.davidbuzatto.jsge.imgui.GuiButton;
 import br.com.davidbuzatto.jsge.math.Vector2;
 import java.awt.Color;
@@ -44,6 +43,7 @@ public class BuscaEmLargura extends EngineFrame {
     private Vertice animOrigem = null; 
     private Vector2 animPonta = null;
     private boolean animando = false;
+    private Line linha;
     
    
     
@@ -74,11 +74,11 @@ public class BuscaEmLargura extends EngineFrame {
         
         btnGrafoPequeno = new GuiButton(150, 30, 200, 50, "Grafo Pequeno", this);
         btnGrafoGrande = new GuiButton(650, 30, 200, 50, "Grafo Grande", this);
-        
+             
         
         //Inicializando o grafo pequeno com 5 vertices
         grafoPequeno = new Grafo();
-        
+        grafoPequeno.tamanho = 1;
         grafoPequeno.adicionarVertice(200, 150);
         grafoPequeno.adicionarVertice(300, 350);
         grafoPequeno.adicionarVertice(400, 150);
@@ -93,8 +93,60 @@ public class BuscaEmLargura extends EngineFrame {
         grafoPequeno.adicionarAresta(4, 1);
         
         //Inicializando grafo grande com 20 vertices
-        
-        
+        grafoGrande = new Grafo();
+        grafoGrande.tamanho = 2;
+
+        grafoGrande.adicionarVertice(50, 150);  
+        grafoGrande.adicionarVertice(180, 120); 
+        grafoGrande.adicionarVertice(300, 180);  
+        grafoGrande.adicionarVertice(450, 130); 
+        grafoGrande.adicionarVertice(580, 160); 
+        grafoGrande.adicionarVertice(680, 200); 
+
+        grafoGrande.adicionarVertice(80, 300);   
+        grafoGrande.adicionarVertice(220, 350);  
+        grafoGrande.adicionarVertice(350, 320); 
+        grafoGrande.adicionarVertice(480, 380); 
+        grafoGrande.adicionarVertice(600, 340); 
+        grafoGrande.adicionarVertice(690, 400); 
+
+
+        grafoGrande.adicionarVertice(60, 450); 
+        grafoGrande.adicionarVertice(150, 550); 
+        grafoGrande.adicionarVertice(280, 500);  
+        grafoGrande.adicionarVertice(400, 580); 
+        grafoGrande.adicionarVertice(520, 520); 
+        grafoGrande.adicionarVertice(650, 550); 
+        grafoGrande.adicionarVertice(320, 440); 
+        grafoGrande.adicionarVertice(500, 250);  
+
+        grafoGrande.adicionarAresta(0, 1);
+        grafoGrande.adicionarAresta(1, 2);
+        grafoGrande.adicionarAresta(2, 3);
+        grafoGrande.adicionarAresta(3, 4);
+        grafoGrande.adicionarAresta(4, 5);
+
+
+        grafoGrande.adicionarAresta(0, 6);
+        grafoGrande.adicionarAresta(1, 7);
+        grafoGrande.adicionarAresta(2, 8);
+        grafoGrande.adicionarAresta(3, 9);
+        grafoGrande.adicionarAresta(4, 10);
+        grafoGrande.adicionarAresta(5, 11);
+
+
+        grafoGrande.adicionarAresta(6, 12);
+        grafoGrande.adicionarAresta(7, 13);
+        grafoGrande.adicionarAresta(8, 14);
+        grafoGrande.adicionarAresta(9, 15);
+        grafoGrande.adicionarAresta(10, 16);
+        grafoGrande.adicionarAresta(11, 17);
+
+        grafoGrande.adicionarAresta(12, 13);
+        grafoGrande.adicionarAresta(14, 18);
+        grafoGrande.adicionarAresta(18, 8);
+        grafoGrande.adicionarAresta(19, 3);
+        grafoGrande.adicionarAresta(19, 9);
         
         
     }
@@ -116,6 +168,18 @@ public class BuscaEmLargura extends EngineFrame {
             filaEventos.clear();
             eventoAtual = null;
             
+        }
+        
+        if(btnGrafoGrande.isMousePressed()){
+            raio = 10;
+            grafoAtual = grafoGrande;
+            desenhar = true;
+            buscaIniciada = false;
+            
+            //Reseta tudo quando aperta
+            historicoEventos.clear();
+            filaEventos.clear();
+            eventoAtual = null;
         }
         
         if(isMouseButtonPressed(MOUSE_BUTTON_LEFT)){
@@ -181,12 +245,13 @@ public class BuscaEmLargura extends EngineFrame {
                 desenharEvento(evento);   
             }
             
-            //isso aqui desenha apenas o atual (metodo diferente por causa da cor)
-            desenharEventoAtual(eventoAtual);
             
             if(eventoAtual != null){
                 desenharEvento(eventoAtual);
             }
+            
+            //isso aqui desenha apenas o atual (metodo diferente por causa da cor)
+            desenharEventoAtual(eventoAtual);
         }
         
         if(buscaIniciada){
@@ -199,13 +264,18 @@ public class BuscaEmLargura extends EngineFrame {
         new BuscaEmLargura();
     }
     
-    public void desenharVertice(Vertice v, int raio, Color cor){
+    public void desenharVertice(Vertice v, int raio, Color cor, int tamanhoGrafo){
         int x = v.getPosX();
         int y = v.getPosY();
         
         fillCircle( x, y, raio, WHITE );
         drawCircle( x, y,  raio, cor );
-        drawText( Integer.toString(v.getValor()), x - 5, y - 5, raio - 5, BLACK );
+        
+        if(tamanhoGrafo == 1){
+            drawText( Integer.toString(v.getValor()), x - 5, y - 5, raio - 5, BLACK );
+        } else if(tamanhoGrafo == 2){
+            drawText( Integer.toString(v.getValor()), x - 3, y - 2, raio, BLACK );
+        }
     }
     
     public void desenharAresta(Vertice vOrigem, Vertice vDestino, int raio, Color cor){
@@ -245,7 +315,7 @@ public class BuscaEmLargura extends EngineFrame {
         //Itera por todos os vértices
         for(Vertice v : g.getTodosVertices()){
             //desenha os vértices
-            desenharVertice(v, raio, BLACK);
+            desenharVertice(v, raio, BLACK, g.tamanho);
             
             //desenha as arestas
             for(int valorVizinho : g.getVizinhos(v.getValor())){
@@ -331,19 +401,40 @@ public class BuscaEmLargura extends EngineFrame {
     }
     
     private void desenharEvento(EventoBusca evento) {
+        int offset = 4;
+        
+        if(grafoAtual.tamanho == 1){
+            offset = 4;
+            setStrokeLineWidth(2);
+        } else if (grafoAtual.tamanho == 2){
+            offset = 2;
+            setStrokeLineWidth(2);
+        }
+        
         if(evento.tipo == TipoEvento.PERCORRER_ARESTA){
             desenharAresta(evento.origem, evento.destino, raio, DARKGREEN);
         } else {
-            desenharVertice(evento.origem, raio - 4, DARKGREEN);
+            desenharVertice(evento.origem, raio - offset, DARKGREEN, grafoAtual.tamanho);
         }
     }
     
     //Igual ao metodo de cima só muda a cor e um pouco do raio para diferenciar
     private void desenharEventoAtual(EventoBusca evento) {
+        int offset = 4;
+        if(grafoAtual.tamanho == 1){
+            offset = 4;
+            setStrokeLineWidth(5);
+        } else if (grafoAtual.tamanho == 2){
+            offset = 1;
+            setStrokeLineWidth(3);
+        }
+        
+        
+        
         if(evento.tipo == TipoEvento.PERCORRER_ARESTA){
             desenharAresta(evento.origem, evento.destino, raio, BLUE);
         } else {
-            desenharVertice(evento.origem, raio + 4, BLUE);
+            desenharVertice(evento.origem, raio + offset, BLUE, grafoAtual.tamanho);
         }
     }
     

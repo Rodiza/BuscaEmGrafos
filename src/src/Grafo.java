@@ -35,6 +35,7 @@ public class Grafo {
     public ArrayList<Vertice> vertices;
     // Lista de adjacencia. O índice da lista externa corresponde ao valor do vértice
     public ArrayList<ArrayList<Integer>> listaAdj;
+    public int tamanho;
     
     //construtor
     public Grafo() {
