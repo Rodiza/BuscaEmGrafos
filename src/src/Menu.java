@@ -1,5 +1,7 @@
 package src;
 
+import java.awt.desktop.QuitStrategy;
+
 /**
  *
  * @author rodiz
@@ -13,6 +15,19 @@ public class Menu extends javax.swing.JFrame {
      */
     public Menu() {
         initComponents();
+        
+        jLabel1.setFont( new java.awt.Font("Arial", java.awt.Font.BOLD, 25 ) );
+        jLabel1.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
+        
+        jLabel2.setFont( new java.awt.Font("Arial", java.awt.Font.PLAIN, 15 ) );
+        jLabel4.setFont( new java.awt.Font("Arial", java.awt.Font.PLAIN, 15 ) );
+        jLabel5.setFont( new java.awt.Font("Arial", java.awt.Font.PLAIN, 15 ) );
+        jLabel6.setFont( new java.awt.Font("Arial", java.awt.Font.PLAIN, 15 ) );
+        
+        buscaEmLargura.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
+        buscaEmProfundidade.setHorizontalAlignment( javax.swing.SwingConstants.CENTER );
+        
+        setLocationRelativeTo( null );
     }
 
     /**
@@ -24,21 +39,102 @@ public class Menu extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel3 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        buscaEmLargura = new javax.swing.JButton();
+        buscaEmProfundidade = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+
+        jLabel3.setText("jLabel3");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setText("BUSCA EM GRAFOS");
+
+        buscaEmLargura.setText("BUSCA EM LARGURA");
+        buscaEmLargura.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscaEmLarguraActionPerformed(evt);
+            }
+        });
+
+        buscaEmProfundidade.setText("BUSCA EM PROFUNIDADE");
+        buscaEmProfundidade.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscaEmProfundidadeActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Davi Beli Rosa");
+
+        jLabel4.setText("Rodrigo Costa Garcia");
+
+        jLabel5.setText("Prof. Dr. David Buzatto");
+
+        jLabel6.setText("IFSP - BCC - ESTRUTURA DE DADOS");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(106, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(buscaEmLargura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(buscaEmProfundidade, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(120, 120, 120))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel1)
+                .addGap(89, 89, 89)
+                .addComponent(buscaEmLargura, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37)
+                .addComponent(buscaEmProfundidade, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 200, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel5)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel6)
+                .addGap(9, 9, 9))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void buscaEmLarguraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscaEmLarguraActionPerformed
+        
+        BuscaEmLargura bl = new BuscaEmLargura();
+        bl.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
+        
+    }//GEN-LAST:event_buscaEmLarguraActionPerformed
+
+    private void buscaEmProfundidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscaEmProfundidadeActionPerformed
+        
+        BuscaEmProfundidade bp = new BuscaEmProfundidade();
+        bp.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
+        
+    }//GEN-LAST:event_buscaEmProfundidadeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -66,5 +162,13 @@ public class Menu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buscaEmLargura;
+    private javax.swing.JButton buscaEmProfundidade;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     // End of variables declaration//GEN-END:variables
 }
