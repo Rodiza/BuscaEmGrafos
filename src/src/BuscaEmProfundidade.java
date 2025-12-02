@@ -16,7 +16,7 @@ import src.Grafo.Vertice;
  * 
  * @author Rodrigo C. Garcia e Davi Beli Rosa
  */
-public class BuscaEmLargura extends EngineFrame {
+public class BuscaEmProfundidade extends EngineFrame {
      
     private Grafo grafoPequeno;
     private Grafo grafoGrande;
@@ -49,7 +49,7 @@ public class BuscaEmLargura extends EngineFrame {
     
 
     
-    public BuscaEmLargura() {
+    public BuscaEmProfundidade() {
         
         super(
             1000,                 // largura                      / width
@@ -266,7 +266,7 @@ public class BuscaEmLargura extends EngineFrame {
     }
     
     public static void main( String[] args ) {
-        new BuscaEmLargura();
+        new BuscaEmProfundidade();
     }
     
     public void desenharVertice(Vertice v, int raio, Color cor, int tamanhoGrafo){
