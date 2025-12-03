@@ -261,6 +261,7 @@ public class BuscaEmProfundidade extends EngineFrame {
         
         if(buscaIniciada){
             desenharTextoEvento(eventoAtual);
+            drawText("Aperte Barra de espaço ou A \npara percorrer o caminho", 670, 550, 15, BLACK);
         }
           
     }
@@ -336,14 +337,13 @@ public class BuscaEmProfundidade extends EngineFrame {
     //fazer uma lista de vertices visitados para desenhar depois
     public void buscaEmProfundidade(Grafo g, int valorInicio){
         boolean marked[] = new boolean[g.getTodosVertices().size()];
-        
+        filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(valorInicio), null));
         dfsRecursivo(g, valorInicio, marked);
     }
     
     public void dfsRecursivo(Grafo g, int valor, boolean[] marked){
         marked[valor] = true;
         //Valor visitado, adicionar na fila de eventos
-        filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(valor), null));
         System.out.println(valor + " visitado");
         
         //vai pros vizinhos

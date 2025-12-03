@@ -261,6 +261,7 @@ public class BuscaEmLargura extends EngineFrame {
         
         if(buscaIniciada){
             desenharTextoEvento(eventoAtual);
+            drawText("Aperte Barra de espaço ou A \npara percorrer o caminho", 670, 550, 15, BLACK);
         }
           
     }
