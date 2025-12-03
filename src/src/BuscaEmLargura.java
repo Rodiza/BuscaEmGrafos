@@ -184,7 +184,7 @@ public class BuscaEmLargura extends EngineFrame {
         
         
         
-        if(isKeyPressed(KEY_SPACE)){
+        if(isKeyPressed(KEY_SPACE) || isKeyPressed(KEY_A)){
             
             if(eventoAtual != null){
                 historicoEventos.add(eventoAtual);

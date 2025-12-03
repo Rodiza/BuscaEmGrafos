@@ -54,7 +54,7 @@ public class BuscaEmProfundidade extends EngineFrame {
         super(
             1000,                 // largura                      / width
             600,                 // algura                       / height
-            "Busca em Largura",      // título                       / title
+            "Busca em Profundidade",      // título                       / title
             60,                  // quadros por segundo desejado / target FPS
             true,                // suavização                   / antialiasing
             false,               // redimensionável              / resizable
@@ -184,7 +184,7 @@ public class BuscaEmProfundidade extends EngineFrame {
         
         
         
-        if(isKeyPressed(KEY_SPACE)){
+        if(isKeyPressed(KEY_SPACE) || isKeyPressed(KEY_A)){
             
             if(eventoAtual != null){
                 historicoEventos.add(eventoAtual);
@@ -213,7 +213,7 @@ public class BuscaEmProfundidade extends EngineFrame {
                 filaEventos.clear();
                 
                 valorInicio = verticeClicado(grafoAtual).getValor();
-                buscaEmLargura(grafoAtual, valorInicio);
+                buscaEmProfundidade(grafoAtual, valorInicio);
                 
                 System.out.println("Vertice: " + verticeClicado(grafoAtual).getValor());
                 
@@ -334,48 +334,29 @@ public class BuscaEmProfundidade extends EngineFrame {
     
 
     //fazer uma lista de vertices visitados para desenhar depois
-    public void buscaEmLargura(Grafo g, int valorInicio){
-        int posX = g.getVertice(valorInicio).getPosX();
-        int posY = g.getVertice(valorInicio).getPosY();
-        boolean[] marked = new boolean[g.getTodosVertices().size()];
+    public void buscaEmProfundidade(Grafo g, int valorInicio){
+        boolean marked[] = new boolean[g.getTodosVertices().size()];
         
+        dfsRecursivo(g, valorInicio, marked);
+    }
+    
+    public void dfsRecursivo(Grafo g, int valor, boolean[] marked){
+        marked[valor] = true;
+        //Valor visitado, adicionar na fila de eventos
+        filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(valor), null));
+        System.out.println(valor + " visitado");
         
-        Queue<Integer> fila = new LinkedList<>(); //Mudar para linked blocking queue se nao funfar
-        fila.add(valorInicio);
-        marked[valorInicio] = true;
-        
-        //Valor inicio visitado, adicionar na fila de eventos
-        filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(valorInicio), null));
-        
-        
-        System.out.println(valorInicio + " visitado"); //debug
-        
-        while(!fila.isEmpty()){
-            int v = fila.poll();
-            System.out.println("Olhando vizinhos de " + v);
+        //vai pros vizinhos
+        for(int w : g.listaAdj.get(valor)){
             
-            for(int w : g.listaAdj.get(v)){
-                //busca os vizinhos
-                filaEventos.add(new EventoBusca(TipoEvento.PERCORRER_ARESTA, g.getVertice(v), g.getVertice(w)));
-                
-                posX = g.getVertice(w).getPosX();
-                posY = g.getVertice(w).getPosY();
-                
-                if( !marked[w] ){
-                    
-                    fila.add(w);
-                    marked[w] = true;
-                    
-                    System.out.println(w + ", vizinho de " + v + " ainda nao foi visitado");
-                    
-                    //visita o vizinho
-                    filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(w), null));
-                    
-                } else{
-                    System.out.println(w + " ja foi visitado");
-                }
+            filaEventos.add(new EventoBusca(TipoEvento.PERCORRER_ARESTA, g.getVertice(valor), g.getVertice(w)));
+            
+            if(!marked[w]){
+                filaEventos.add(new EventoBusca(TipoEvento.VISITAR_VERTICE, g.getVertice(w), null));
+                dfsRecursivo(g, w, marked);
             }
-        }       
+        }
+        
     }
     
         
