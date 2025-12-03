@@ -431,7 +431,7 @@ public class BuscaEmProfundidade extends EngineFrame {
         drawText("Passo atual: ", 700, 100, 20, BLACK);
         
         if(evento.tipo == TipoEvento.VISITAR_VERTICE){
-            drawText("Vizitando Vértice " + valorO, 
+            drawText("Visitando Vértice " + valorO, 
                     700, 120, 15, BLACK);  
         }
         
